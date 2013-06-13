@@ -179,3 +179,5 @@ you'd better set a big `TestKeyNumber`, for example : 1000000, then this functio
 ```
 it means node 1 hitted 219 times, and the percentage is 21.9%, the node 2 hitted 781 times, and the percentage is 78.1%.
 So, lets look at the configurate(ketama:get_ring_summary), the results are very similar.
+
+**note:** if you find the resaults are not smimilar to your configure, you should increase your node_copies(weight mode) or copies_num(specific mode)
