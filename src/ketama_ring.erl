@@ -28,20 +28,25 @@ list_rings() ->
 get_object(Ring, Key)->
     case get_ring_opts(Ring) of
         {ok, #ring_opt{ match_operator  = Op }} ->
-            Hash    = ?MISC:get_hash_value(Key),
+            Hash0   = ?MISC:get_hash_value(Key),
             RingTab = ?RING_TAB(Ring),
-            case ets:select(RingTab, hash_node_match_spec(Hash, Op), 1) of
-                {[#node_item{id = NodeId, object = Object}], _Continuation} ->
-                    {ok, {NodeId, Object}};
-                '$end_of_table'->
-                    case get_first_node(RingTab, Op) of 
-                        {ok, #node_item{id = NodeId, object = Object}} ->
-                            {ok, {NodeId, Object}};
-                        Error->
-                            Error
+            Hash =
+            case Op of
+                '>=' ->
+                    Hash0-1;
+                '>' ->
+                    Hash0
+            end,
+            case ets:next(RingTab, Hash) of
+                '$end_of_table' -> 
+                    case ets:first(RingTab) of 
+                        '$end_of_table' ->
+                            {error, get_object_failed};
+                        ItemKey->
+                            get_object_by_hash(RingTab, ItemKey)
                     end;
-                _->
-                    {error, get_object_failed}
+                ItemKey->
+                    get_object_by_hash(RingTab, ItemKey)
             end;
         Error ->
             Error
@@ -304,15 +309,6 @@ init_nodes(Ring) ->
             Error
     end.
 
-get_first_node(TableName, Op)->
-    case ets:select(TableName, hash_node_match_spec(0, Op), 1) of 
-        {[MatchedNode],_Continuation}->
-            {ok, MatchedNode};
-        '$end_of_table'->
-            {error, get_node_failed}
-    end.
-
-
 clear_node_copies(Ring) -> 
     RingTab       = ?RING_TAB(Ring),
     NodeMatchSpec = node_match_spec('_'),
@@ -331,6 +327,16 @@ balance_test(Ring, KeyNum) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% helper functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_object_by_hash(RingTab, Hash) -> 
+    case ets:lookup(RingTab, Hash) of 
+        [#node_item{ id     = NodeId, 
+                     object = Object}] ->
+                {ok, {NodeId, Object}};
+        _->
+            {error, get_object_failed}
+    end.
+
+
 list_key_count([], _TotalCount, AccOut) -> AccOut;
 list_key_count([Key|T], TotalCount, AccOut) -> 
     NewAccOut = 
@@ -348,14 +354,6 @@ node_match_spec(NodeId) ->
                copy_id   = '_',
                hash      = '_',
                object    = '_'}.
-
-hash_node_match_spec(Hash, Op) when is_integer(Hash)  ->
-    [{#node_item{ id        = '_',
-                  copy_id   = '_',
-                  hash      = '$1',
-                  object    = '_'},
-    [{Op, '$1', Hash}],
-    ['$_']}].
 
 make_nodes(Number, NodeId, HashSeed, Object, Expand, ConcatChar, Nodes) when Number > 0 ->
     NewNodes = make_node_items(NodeId, Number, HashSeed, Object, Expand, ConcatChar),
