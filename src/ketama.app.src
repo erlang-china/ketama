@@ -1,0 +1,13 @@
+{application, ketama,
+ [
+  {description, "A consistent hashing alogrithm lib"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  ets_mgr
+                 ]},
+  {mod, { ketama_app, []}},
+  {env, []}
+ ]}.
