@@ -315,6 +315,8 @@ clear_node_copies(Ring) ->
     true          = ets:match_delete(RingTab, NodeMatchSpec),
     ok.
 
+balance_test(_Ring, KeyNum) when KeyNum =<0 -> 
+  {error, key_number_should_greater_than_zero};
 balance_test(Ring, KeyNum) ->
     Ret = 
     [ begin 
@@ -322,7 +324,8 @@ balance_test(Ring, KeyNum) ->
         NodeId
       end
     || Key <- lists:seq(1, KeyNum)],
-    list_key_count(Ret, KeyNum, []).
+    CountList = list_key_count(Ret, dict:new()),
+    [{Id, Number, Number/KeyNum}||{Id, Number}<- CountList].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% helper functions
@@ -337,17 +340,10 @@ get_object_by_hash(RingTab, Hash) ->
     end.
 
 
-list_key_count([], _TotalCount, AccOut) -> AccOut;
-list_key_count([Key|T], TotalCount, AccOut) -> 
-    NewAccOut = 
-    case proplists:get_value(Key, AccOut) of 
-        undefined ->
-            [{Key, {1, 1/TotalCount}}|AccOut];
-        {Number, _Percentage} ->
-            AccOut1 = proplists:delete(Key, AccOut),
-            [{Key, {Number+1, (Number+1)/TotalCount}}|AccOut1]
-    end,
-    list_key_count(T, TotalCount, NewAccOut).
+list_key_count([], Dict) -> dict:to_list(Dict);
+list_key_count([Key|T], Dict) -> 
+    NewDict = dict:update_counter(Key, 1, Dict),
+    list_key_count(T, NewDict).
 
 node_match_spec(NodeId) ->
    #node_item{ id        = NodeId,
