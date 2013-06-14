@@ -137,7 +137,7 @@ but you also want to backup your current options that after the testing was fini
                  ring  :: atom(), 
                  name  :: atom(), 
                  nodes :: list(),
-                 time = os:localtime()}).
+                 time = erlang:localtime()}).
 ```
 
 #### Usage:
