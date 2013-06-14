@@ -3,7 +3,7 @@
 
 -record(node, {id             :: integer(), 
                hash_seed      :: string(),
-               weight         :: integer(),
+               weight     = 0 :: integer(),
                copies_num = 0 :: integer(),
                object         :: any()}).
 
@@ -11,7 +11,7 @@
                  ring  :: atom(), 
                  name  :: atom(), 
                  nodes :: list(),
-                 time = os:timestamp()}).
+                 time = erlang:localtime()}).
 
 -record(ring_opt, { name                     :: atom(), 
                     node_copies     = 40     :: integer(),
