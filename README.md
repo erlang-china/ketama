@@ -95,7 +95,7 @@ RingTest = #ring_opt{name = test, node_copies=80}.
 -record(node, {id             :: integer(), 
                hash_seed      :: string(),
                weight         :: integer(),
-               copies_num = 0 :: integer(),
+               copies_num     :: integer(),
                object         :: any()}).
 ```
 **id:**
@@ -129,7 +129,7 @@ ketama:set_node_copies(test,1,100). %% work will gen_type == specific
 
 #### What is stash?
 
-while you do some A/B traffic testing, you may reduce the weight and add an node, then the tiny request will goto the testing server, 
+while you do some A/B testing about request, you may reduce the weight and add an node, then the tiny request will goto the testing server, 
 but you also want to backup your current options that after the testing was finished, you could recovery by a stash.
 
 ```erlang
@@ -137,7 +137,7 @@ but you also want to backup your current options that after the testing was fini
                  ring  :: atom(), 
                  name  :: atom(), 
                  nodes :: list(),
-                 time = os:timestamp()}).
+                 time = os:localtime()}).
 ```
 
 #### Usage:
