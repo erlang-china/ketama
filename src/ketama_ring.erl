@@ -166,8 +166,7 @@ list_nodes(Ring) ->
             {error, ring_not_exist}
     end.
 
-add_node(Ring, #node{ id      = NodeId, 
-                       weight = Weight} = Node) ->
+add_node(Ring, #node{ id = NodeId} = Node) ->
     RingTab = ?RING_TAB(Ring),
     case ?MISC:is_tab_exist(RingTab) of 
          true ->
@@ -175,12 +174,7 @@ add_node(Ring, #node{ id      = NodeId,
                 {error, node_not_exist} ->
                     NodeTab = ?NODE_TAB(Ring),
                     true    = ets:insert(NodeTab, Node),
-                    case Weight > 0 of 
-                        true->
-                            init_nodes(Ring);
-                        false ->
-                            ok
-                    end;
+                    init_nodes(Ring);
                 {ok, _Node} ->
                     {error, node_alrady_exist};
                 Error ->
