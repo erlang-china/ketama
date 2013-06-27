@@ -175,7 +175,7 @@ you'd better set a big `TestKeyNumber`, for example : 1000000, then this functio
 
 
 (ketama@ZhengXujin-PC)10> ketama:balance_test(test, 1000).
-[{2,{781,0.781}},{1,{219,0.219}}]
+{ok,[{2,{781,0.781}},{1,{219,0.219}}]}
 ```
 it means node 1 hitted 219 times, and the percentage is 21.9%, the node 2 hitted 781 times, and the percentage is 78.1%.
 So, lets look at the configurate(ketama:get_ring_summary), the results are very similar.

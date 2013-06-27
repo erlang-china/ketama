@@ -335,7 +335,7 @@ balance_test(Ring, KeyNum) ->
       end
     || Key <- lists:seq(1, KeyNum)],
     CountList = list_key_count(Ret, dict:new()),
-    [{Id, Number, Number/KeyNum}||{Id, Number}<- CountList].
+    {ok, [{Id, Number, Number/KeyNum}||{Id, Number}<- CountList]}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% helper functions
