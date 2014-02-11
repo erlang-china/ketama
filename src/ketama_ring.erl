@@ -27,7 +27,8 @@
          get_ring_summary/1,
          balance_test/2]).
 
--export([get_node/2,
+-export([init_nodes/1,
+         get_node/2,
          list_nodes/1,
          add_node/2, 
          remove_node/2, 
